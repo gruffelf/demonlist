@@ -1,0 +1,88 @@
+<html>
+<head>
+    <title>Demonlist Game</title>
+</head>
+<body>
+    <h1>Demonlist Game</h1>
+    <p id="text">Click button to get level.</p> 
+    <img id="screenshot" width="50%" height="auto"></img>
+    <input type="text" id="inputfield">    
+    <button type="button" id="guess">Submit Guess</button>
+    <button type="button" id="lvbutton">Generate Level</button> 
+    <input type="text" id="ground">   
+    <button type="button" id="syncbutton">Sync List</button>    
+    <script>                                  
+        var lvbutton = document.getElementById("lvbutton");        
+        var syncbutton = document.getElementById("syncbutton");
+        var text = document.getElementById("text");
+        var img = document.getElementById("screenshot");
+        var form = document.getElementById('inputfield');
+        var guess = document.getElementById('guess');
+        var ground = document.getElementById('ground');
+        var vidURL;
+        let lvname;
+        let lvplace;
+        const devIP = 'http://127.0.0.1:8000'
+        const localIP = 'http://192.168.86.100:8000'
+        const liveIP = 'http://epyx.com.au:6273'
+        const apiIP = localIP
+        const loadingImg = 'https://th.bing.com/th/id/OIP.t0Hjn9yoQiiquA_S_a0ZfwHaEK?rs=1&pid=ImgDetMain'
+
+
+        guess.addEventListener("click", function() {
+            if (form.value.toLowerCase() === lvname.toLowerCase()) {
+                text.innerHTML = 'Correct!'
+            }
+        });
+
+        lvbutton.addEventListener("click", function() {
+            img.src = loadingImg
+            text.innerHTML = 'LOADING'
+            let request
+            var value = Number(ground.value)
+            if (Number.isInteger(value)) {
+                console.log('change')
+                let num = Math.abs(value)
+                request = '/demon/getdemon?num='+num
+            } else {
+                console.log('ass')
+                request = '/demon/getdemon'
+            }
+            let cap = ground.value
+            fetch(apiIP+request)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                lvname = data.Name;
+                lvplace = 'data.Position';
+                console.log(data.Video)             
+                let url = apiIP+'/demon/getcapture?entry='+data.Video;
+                fetch(url)
+                .then(response => response.blob())
+                .then(data => {
+                    var urlCreator = window.URL || window.webkitURL
+                    var imageUrl = urlCreator.createObjectURL(data);
+                    img.src = imageUrl;
+                    text.innerHTML = '<br>' + lvplace;
+                })
+                .catch(error => console.error(error));           
+            })
+            .catch(error => console.error(error)); 
+            
+            
+        });
+
+        syncbutton.addEventListener("click", function() {
+            fetch(apiIP+'/demon/sync')
+            .then(response => response.json())
+            .then(data => {
+            console.log(data);
+            text.innerHTML = data.Status;            
+            })
+            .catch(error => console.error(error));
+        });
+        
+        
+    </script>
+</body>
+</html>
