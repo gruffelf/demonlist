@@ -1,0 +1,12 @@
+:root {
+    --color-a: #969696;
+    --color-b: #000000;
+    --color-c: black;
+    --color-d: lightgrey;
+}
+html {
+    background: var(--color-a);            
+}           
+* {
+    font-family: 'Courier New', Courier, monospace;
+}

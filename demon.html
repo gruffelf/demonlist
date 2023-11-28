@@ -1,16 +1,59 @@
 <html>
 <head>
+    <meta charset="utf-8" />
     <title>Demonlist Game</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;            
+            gap: 10px;
+            margin: 100px;                            
+        }       
+        
+        .loading {
+            width: 5%;
+            height: auto;
+        }
+
+        .screenshot {
+            width: 75%;
+            height: auto;
+        }
+
+        #screenshot {
+            background: var(--color-a);
+        }
+
+        .bar {
+            width: 100%; 
+                      
+            background-color: var(--color-d);
+            top: 0;
+            left: 0;
+            position: fixed; 
+            text-align: left;           
+        }
+
+        .heading {
+            margin-left: 30;            
+        }
+    </style>
 </head>
 <body>
-    <h1>Demonlist Game</h1>
-    <p id="text">Click button to get level.</p> 
-    <img id="screenshot" width="50%" height="auto"></img>
-    <input type="text" id="inputfield">    
-    <button type="button" id="guess">Submit Guess</button>
-    <button type="button" id="lvbutton">Generate Level</button> 
-    <input type="text" id="ground">   
-    <button type="button" id="syncbutton">Sync List</button>    
+    <div class="bar">
+        <h1 class="heading">Demonlist Game</h1>
+    </div>
+    <div class="body">
+        <p id="text">Click button to get level.</p>      
+        <img id="screenshot" src="" class="" background="none">    
+        <input type="text" id="inputfield" placeholder="Enter Guess">    
+        <button type="button" id="guess">Submit Guess</button>
+        <button type="button" id="lvbutton">Generate Level</button> 
+        <input type="text" id="ground" placeholder="Number of Levels">   
+        <button type="button" id="syncbutton">Sync List</button>    
+    </div>
     <script>                                  
         var lvbutton = document.getElementById("lvbutton");        
         var syncbutton = document.getElementById("syncbutton");
@@ -19,33 +62,41 @@
         var form = document.getElementById('inputfield');
         var guess = document.getElementById('guess');
         var ground = document.getElementById('ground');
+        
         var vidURL;
         let lvname;
         let lvplace;
         const devIP = 'http://127.0.0.1:8000'
         const localIP = 'http://192.168.86.100:8000'
-        const liveIP = 'http://epyx.com.au:6273'
-        const apiIP = localIP
-        const loadingImg = 'https://th.bing.com/th/id/OIP.t0Hjn9yoQiiquA_S_a0ZfwHaEK?rs=1&pid=ImgDetMain'
+        const liveIP = 'http://139.218.103.133:8000'
+        const apiIP = liveIP;
+        const loadingImg = 'assets/1486.gif'
+        const errorImg = 'assets/error-icon.png'
+        const tickImg = 'assets/tick-icon.gif'
 
-
+        
         guess.addEventListener("click", function() {
             if (form.value.toLowerCase() === lvname.toLowerCase()) {
-                text.innerHTML = 'Correct!'
+                text.innerHTML = 'Correct!';
+                img.className = 'loading';
+                img.src = tickImg;
             }
         });
 
         lvbutton.addEventListener("click", function() {
-            img.src = loadingImg
+            img.className = "loading";
+            img.src = loadingImg;
             text.innerHTML = 'LOADING'
             let request
             var value = Number(ground.value)
-            if (Number.isInteger(value)) {
-                console.log('change')
+            if (Number.isInteger(value)) {                
                 let num = Math.abs(value)
-                request = '/demon/getdemon?num='+num
-            } else {
-                console.log('ass')
+                if (num === 0) {
+                    request = '/demon/getdemon'
+                } else {
+                    request = '/demon/getdemon?num='+num
+                }                
+            } else {                
                 request = '/demon/getdemon'
             }
             let cap = ground.value
@@ -63,11 +114,22 @@
                     var urlCreator = window.URL || window.webkitURL
                     var imageUrl = urlCreator.createObjectURL(data);
                     img.src = imageUrl;
-                    text.innerHTML = '<br>' + lvplace;
+                    img.className = 'screenshot';
+                    text.innerHTML = '';
                 })
-                .catch(error => console.error(error));           
+                .catch(error => {
+                    console.error(error)
+                    img.className = "loading";
+                    img.src = errorImg;
+                    text.innerHTML='ERROR';
+                });           
             })
-            .catch(error => console.error(error)); 
+            .catch(error => {                
+                console.error(error)
+                img.className = "loading";
+                img.src = errorImg;
+                text.innerHTML='ERROR';
+            }); 
             
             
         });
