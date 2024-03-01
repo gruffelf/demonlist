@@ -6,7 +6,7 @@ import yt_dlp as youtube_dl
 
 
 url = "https://pointercrate.com/"
-auth = ("gruffelf","22884646ba")
+auth = ("gruffelf", "password")
 
 app = FastAPI()
 
